@@ -1,0 +1,43 @@
+﻿@model ControleFinancasWeb.Models.LoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/TelaLogin/style_login.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body class="text-center">
+    <section class="form-signin">
+        @using (Html.BeginForm("Login", "Conta", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+
+            <img class="mb-4" src="~/Imagens/dinheiro.svg" alt="" width="90" height="90">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <h1 class="h3 mb-3 font-weight-normal">Bem Vindo!!</h1>
+            <label class="sr-only">Usuário</label>
+            @Html.TextBoxFor(m => m.Usuario, new { @class = "form-control",@placeholder="Digite o usuário aqui..." })
+            @Html.ValidationMessageFor(m => m.Usuario, "", new { @class = "text-danger"})
+            <label class="sr-only">Senha</label>
+            @Html.PasswordFor(m => m.Senha, new { @class = "form-control",@placeholder = "Digite sua senha aqui..." })
+            @Html.ValidationMessageFor(m => m.Senha, "", new { @class = "text-danger" })
+            <div class="checkbox mb-3">
+                <label>
+                    <input type="checkbox" value="remember-me"> Lembre Me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
+            <p class="mt-5 mb-3 text-muted">&copy; 2017-2020</p>
+        }
+    </section>
+</body>
+</html>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}
