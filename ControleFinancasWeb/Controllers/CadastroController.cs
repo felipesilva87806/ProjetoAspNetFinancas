@@ -18,6 +18,11 @@ namespace ControleFinancasWeb.Controllers
             return View(UsuarioModel.RecuperLista());
         }
 
+        public ActionResult CadUsuario()
+        {
+            return View();
+        }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -33,7 +38,7 @@ namespace ControleFinancasWeb.Controllers
         {
             return Json(UsuarioModel.ExcluirPeloId(id));
         }
-
+        
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
