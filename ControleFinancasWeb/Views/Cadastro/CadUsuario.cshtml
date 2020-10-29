@@ -1,4 +1,5 @@
-﻿@model ControleFinancasWeb.Models.UsuarioModel
+﻿@model ControleFinancasWeb.Models.ViewModel.CadUsuarioViewModel
+
 
 <!DOCTYPE html>
 
@@ -10,48 +11,98 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    @using (Html.BeginForm()) 
-    {
-        @Html.AntiForgeryToken()
-        
-        <div class="form-horizontal">
-            <h4>Inclusão de Usuário</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                @Html.LabelFor(model => model.Login, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Login, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Login, "", new { @class = "text-danger" })
+    <section id="CadNewUser">
+        @using (Html.BeginForm("CadUsuario", "Cadastro", new { ReturnUrl = ViewBag.ReturnUrl },FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            <div>
+                <h4>Inclusão de Usuário</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Login, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Login, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Login, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Senha, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.PasswordFor(model => model.Senha, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Senha, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="margin-top:10px;" class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Incluir" class="btn btn-success" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h3 class="alert-success text-center">@ViewBag.Mensagem</h3>
                 </div>
             </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.Senha, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Senha, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Senha, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
-                </div>
-            </div>
-    
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Incluir" class="btn btn-success" />
-                </div>
-            </div>
-        </div>
-    }
-    
-    <div>
-        @Html.ActionLink("Voltar para Lista", "Usuario","Cadastro", new { @class = "btn btn-primary" })
+        }
+    </section>
+    <div class="">
+        @Html.ActionLink("Voltar para Lista", "Usuario", "Cadastro", new { @class = "btn btn-primary" })
     </div>
 </body>
 </html>
+@section Scripts{
+    <script>
+        $('click', '#btn_confirmar', function () {
+            var btn = $(this),
+                url = '@Url.Action("SalvarGrupoProduto", "Cadastro")',
+                param = {
+                    Id: $('#id_cadastro').val(),
+                    Nome: $('#txt_nome').val(),
+                    Ativo: $('#cbx_ativo').prop('checked')
+                };
+            $.post(url, add_anti_forgery_token(param), function (response) {
+                if (response.Resultado == "OK") {
+                    if (param.Id == 0) {
+                        param.Id = response.IdSalvo;
+                        var table = $('#grid_cadastro').find('tbody'),
+                            linha = criar_linha_grid(param);
+                        table.append(linha);
+                    }
+                    else {
+                        var linha = $('#grid_cadastro').find('tr[data-id=' + param.Id + ']').find('td');
+                        linha
+                            .eq(0).html(param.Nome).end()
+                            .eq(1).html(param.Ativo ? 'SIM' : 'NÃO');
+                    }
+                    $('#modal_cadastro').parents('.bootbox').modal('hide');
+                }
+                else if (response.Resultado == "ERRO") {
+                    $('#msg_aviso').hide();
+                    $('#msg_mensagem_aviso').hide();
+                    $('#msg_erro').show();
+                }
+                else if (response.Resultado == "AVISO") {
+                    $('#msg_mensagem_aviso').html(formatar_mensagem_aviso(response.Mensagens));
+                    $('#msg_aviso').show();
+                    $('#msg_mensagem_aviso').show();
+                    $('#msg_erro').hide();
+                }
+            });
+        });
+
+
+
+
+    </script>
+    
+    
+    }

@@ -1,21 +1,39 @@
 ﻿using ControleFinancasWeb.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using ControleFinancasWeb.Models.ViewModel;
 using System.Web.Mvc;
 
 namespace ControleFinancasWeb.Controllers
 {
+
     public class CadastroController : Controller
     {
-
-        private const string _senhaPadrao = "{$127;$188}";
-
 
         public ActionResult Usuario()
         {
             return View(UsuarioModel.RecuperLista());
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CadUsuario(CadUsuarioViewModel cad)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var retorno = CadastroUsuarioModel.InserirNewUsuario(cad.Login,cad.Senha,cad.Nome);
+            if (retorno > 0)
+            {
+                ViewBag.Mensagem = " # Usuário inserido com sucesso !!";
+                return View(cad);
+            }
+            else
+            {
+                ModelState.AddModelError("", " # Erro ao Inserir Verifique!");
+            }
+            return View(cad);
         }
 
         public ActionResult CadUsuario()
@@ -23,6 +41,7 @@ namespace ControleFinancasWeb.Controllers
             return View();
         }
 
+        /*
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -79,6 +98,6 @@ namespace ControleFinancasWeb.Controllers
             }
 
             return Json(new { Resultado = resultado, Mensagens = mensagens, IdSalvo = idSalvo });
-        }
+        }*/
     }
 }
